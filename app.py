@@ -1,38 +1,19 @@
 from flask import Flask, request
+from db import dogs
 
 app = Flask(__name__)
 
-dogs = [
-    {
-        "name": "Morvi",
-        "breed": "Mix",
-        "age": "3",
-        "gender": "Male",
-        "size": "Medium",
-        "picture_url": "/morvi.jpg",
-        "description": "Affectionate and loving doggy",
-        "adopted": True,
-    }
-]
 
-
-@app.get("/dogs")
+@app.get("/api/dogs")
 def get_dogs():
-    return {"dogs": dogs}
+    return {"dogs": list(dogs.values())}
 
 
-@app.post("/dogs")
+@app.post("/api/dogs")
 def create_dogs():
-    request_data = request.get_json()
-    new_dog = {
-        "name": request_data["name"],
-        "breed": request_data["breed"],
-        "age": request_data["age"],
-        "gender": request_data["gender"],
-        "size": request_data["size"],
-        "picture_url": request_data["picture_url"],
-        "description": request_data["description"],
-        "adopted": request_data["adopted"],
-    }
-    dogs.append(new_dog)
+    dog_data = request.get_json()
+    dog_id = len(dogs) + 1
+
+    new_dog = {**dog_data, "id": dog_id}
+    dogs[dog_id] = new_dog
     return new_dog, 201
