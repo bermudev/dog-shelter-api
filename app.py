@@ -1,19 +1,38 @@
 from flask import Flask, request
-from db import dogs
+from db import dogs, vaccines
 
 app = Flask(__name__)
 
 
-@app.get("/api/dogs")
-def get_dogs():
-    return {"dogs": list(dogs.values())}
+@app.get("/api/dog")
+def get_all_dogs():
+    return dogs
 
 
-@app.post("/api/dogs")
-def create_dogs():
+@app.post("/api/dog")
+def create_dog():
     dog_data = request.get_json()
-    dog_id = len(dogs) + 1
+    key = max(dogs.keys()) + 1
+    dogs[key] = dog_data
+    return dog_data, 201
 
-    new_dog = {**dog_data, "id": dog_id}
-    dogs[dog_id] = new_dog
-    return new_dog, 201
+
+@app.get("/api/dog/<int:id>")
+def get_single_dog(id):
+    try:
+        return dogs[id]
+    except KeyError:
+        return {"message": "Dog not found"}, 404
+
+
+@app.post("/api/vaccine")
+def create_vaccine():
+    vaccine_data = request.get_json()
+    key = max(vaccines.keys()) + 1
+    vaccines[key] = vaccine_data
+    return vaccine_data, 201
+
+
+@app.get("/api/vaccine")
+def get_all_vaccines():
+    return vaccines
