@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 
 from db import dogs, vaccines
+from schemas import VaccineSchema
 
 blp = Blueprint("vaccines", __name__, description="Operations on vaccines")
 
@@ -12,15 +13,8 @@ class VaccineList(MethodView):
     def get(self):
         return vaccines
 
-    def post(self):
-        vaccine_data = request.get_json()
-        if (
-            "dog_id" not in vaccine_data
-            or "vaccine_name" not in vaccine_data
-            or "vaccine_date" not in vaccine_data
-        ):
-            abort(400, message="Bad request. Ensure all the keys are present.")
-
+    @blp.arguments(VaccineSchema)
+    def post(self, vaccine_data):
         for vaccine in vaccines.values():
             if (
                 vaccine_data["dog_id"] == vaccine["dog_id"]

@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 
 from db import dogs
+from schemas import DogSchema
 
 blp = Blueprint("dogs", __name__, description="Operations on dogs")
 
@@ -12,20 +13,8 @@ class DogList(MethodView):
     def get(self):
         return dogs
 
-    def post(self):
-        dog_data = request.get_json()
-        if (
-            "name" not in dog_data
-            or "breed" not in dog_data
-            or "age" not in dog_data
-            or "gender" not in dog_data
-            or "size" not in dog_data
-            or "picture_url" not in dog_data
-            or "description" not in dog_data
-            or "adopted" not in dog_data
-        ):
-            abort(400, message="Bad request. Ensure all the keys are present.")
-
+    @blp.arguments(DogSchema)
+    def post(self, dog_data):
         for dog in dogs.values():
             if dog_data["name"] == dog["name"]:
                 abort(400, message="Dog already exists.")
