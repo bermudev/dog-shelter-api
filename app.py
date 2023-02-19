@@ -43,6 +43,15 @@ def create_dog():
     return dog_data, 201
 
 
+@app.delete("/api/dog/<int:id>")
+def delete_dog(id):
+    try:
+        del dogs[id]
+        return {"message": "Dog deleted."}
+    except KeyError:
+        abort(404, message="Dog not found.")
+
+
 @app.get("/api/vaccine")
 def get_all_vaccines():
     return vaccines
@@ -79,3 +88,12 @@ def create_vaccine():
     key = max(vaccines.keys()) + 1
     vaccines[key] = vaccine_data
     return vaccine_data, 201
+
+
+@app.delete("/api/vaccine/<int:id>")
+def delete_vaccine(id):
+    try:
+        del vaccines[id]
+        return {"message": "Vaccine deleted."}
+    except KeyError:
+        abort(404, message="Vaccine not found.")
