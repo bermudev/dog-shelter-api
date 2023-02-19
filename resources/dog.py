@@ -10,10 +10,12 @@ blp = Blueprint("dogs", __name__, description="Operations on dogs")
 
 @blp.route("/api/dog")
 class DogList(MethodView):
+    @blp.response(200, DogSchema(many=True))
     def get(self):
-        return dogs
+        return dogs.values()
 
     @blp.arguments(DogSchema)
+    @blp.response(201, DogSchema)
     def post(self, dog_data):
         for dog in dogs.values():
             if dog_data["name"] == dog["name"]:
@@ -26,6 +28,7 @@ class DogList(MethodView):
 
 @blp.route("/api/dog/<int:id>")
 class Dog(MethodView):
+    @blp.response(200, DogSchema)
     def get(self, id):
         try:
             return dogs[id]

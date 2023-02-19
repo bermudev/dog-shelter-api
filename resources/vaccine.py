@@ -10,10 +10,12 @@ blp = Blueprint("vaccines", __name__, description="Operations on vaccines")
 
 @blp.route("/api/vaccine")
 class VaccineList(MethodView):
+    @blp.response(200, VaccineSchema(many=True))
     def get(self):
-        return vaccines
+        return vaccines.values()
 
     @blp.arguments(VaccineSchema)
+    @blp.response(201, VaccineSchema)
     def post(self, vaccine_data):
         for vaccine in vaccines.values():
             if (
@@ -32,6 +34,7 @@ class VaccineList(MethodView):
 
 @blp.route("/api/vaccine/<int:id>")
 class Vaccine(MethodView):
+    @blp.response(200, VaccineSchema)
     def get(self, id):
         try:
             return vaccines[id]
