@@ -17,4 +17,4 @@ class VaccineSchema(Schema):
     # id = fields.Int(dump_only=True)
     dog_id = fields.Int(required=True)
     vaccine_name = fields.Str(required=True)
-    vaccine_date = fields.DateTime(dt_format="iso8601", required=True)
+    vaccine_date = fields.Str(required=True)
