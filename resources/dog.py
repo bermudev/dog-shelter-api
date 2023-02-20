@@ -1,8 +1,10 @@
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from db import dogs
+from db import db
+from models import DogModel
 from schemas import DogSchema
 
 blp = Blueprint("dogs", __name__, description="Operations on dogs")
@@ -12,32 +14,34 @@ blp = Blueprint("dogs", __name__, description="Operations on dogs")
 class DogList(MethodView):
     @blp.response(200, DogSchema(many=True))
     def get(self):
-        return dogs.values()
+        return DogModel.query.all()
 
     @blp.arguments(DogSchema)
     @blp.response(201, DogSchema)
     def post(self, dog_data):
-        for dog in dogs.values():
-            if dog_data["name"] == dog["name"]:
-                abort(400, message="Dog already exists.")
+        dog = DogModel(**dog_data)
 
-        key = max(dogs.keys()) + 1
-        dogs[key] = dog_data
-        return dog_data, 201
+        try:
+            db.session.add(dog)
+            db.session.commit()
+        except IntegrityError:
+            abort(400, message="A dog with that name already exists.")
+        except SQLAlchemyError:
+            abort(500, message="An error ocurred while inserting the dog")
+
+        return dog_data
 
 
 @blp.route("/api/dog/<int:id>")
 class Dog(MethodView):
     @blp.response(200, DogSchema)
     def get(self, id):
-        try:
-            return dogs[id]
-        except KeyError:
-            abort(404, message="Dog not found.")
+        dog = DogModel.query.get_or_404(id)
+        return dog
 
     def delete(self, id):
-        try:
-            del dogs[id]
-            return {"message": "Dog deleted."}
-        except KeyError:
-            abort(404, message="Dog not found.")
+        dog = DogModel.query.get_or_404(id)
+        db.session.delete(dog)
+        db.session.commit()
+
+        return {"message": "Dog entry deleted."}

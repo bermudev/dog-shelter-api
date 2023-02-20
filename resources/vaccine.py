@@ -1,8 +1,10 @@
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from db import dogs, vaccines
+from db import db
+from models import VaccineModel
 from schemas import VaccineSchema
 
 blp = Blueprint("vaccines", __name__, description="Operations on vaccines")
@@ -12,38 +14,32 @@ blp = Blueprint("vaccines", __name__, description="Operations on vaccines")
 class VaccineList(MethodView):
     @blp.response(200, VaccineSchema(many=True))
     def get(self):
-        return vaccines.values()
+        return VaccineModel.query.all()
 
     @blp.arguments(VaccineSchema)
     @blp.response(201, VaccineSchema)
     def post(self, vaccine_data):
-        for vaccine in vaccines.values():
-            if (
-                vaccine_data["dog_id"] == vaccine["dog_id"]
-                and vaccine_data["vaccine_name"] == vaccine["vaccine_name"]
-            ):
-                abort(400, message="Vaccine already exists for that dog.")
+        vaccine = VaccineModel(**vaccine_data)
 
-        if vaccine_data["dog_id"] not in dogs:
-            abort(400, message="Dog not found.")
+        try:
+            db.session.add(vaccine)
+            db.session.commit()
+        except SQLAlchemyError:
+            abort(500, message="An error ocurred while inserting the vaccine")
 
-        key = max(vaccines.keys()) + 1
-        vaccines[key] = vaccine_data
-        return vaccine_data, 201
+        return vaccine_data
 
 
 @blp.route("/api/vaccine/<int:id>")
 class Vaccine(MethodView):
     @blp.response(200, VaccineSchema)
     def get(self, id):
-        try:
-            return vaccines[id]
-        except KeyError:
-            abort(404, message="Vaccine not found.")
+        vaccine = VaccineModel.query.get_or_404(id)
+        return vaccine
 
     def delete(self, id):
-        try:
-            del vaccines[id]
-            return {"message": "Vaccine deleted."}
-        except KeyError:
-            abort(404, message="Vaccine not found.")
+        vaccine = VaccineModel.query.get_or_404(id)
+        db.session.delete(vaccine)
+        db.session.commit()
+
+        return {"message": "Vaccine entry deleted."}
