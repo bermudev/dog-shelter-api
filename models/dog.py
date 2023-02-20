@@ -14,4 +14,6 @@ class DogModel(db.Model):
     description = db.Column(db.String(100), unique=False, nullable=False)
     adopted = db.Column(db.Boolean, unique=False, nullable=False)
 
-    vaccines = db.relationship("VaccineModel", back_populates="dog", lazy="dynamic")
+    vaccines = db.relationship(
+        "VaccineModel", back_populates="dog", lazy="dynamic", cascade="all, delete"
+    )
