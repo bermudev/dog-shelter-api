@@ -1,5 +1,6 @@
 from flask import request
 from flask.views import MethodView
+from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -16,6 +17,7 @@ class DogList(MethodView):
     def get(self):
         return DogModel.query.all()
 
+    @jwt_required()
     @blp.arguments(DogSchema)
     @blp.response(201, DogSchema)
     def post(self, dog_data):
@@ -39,6 +41,7 @@ class Dog(MethodView):
         dog = DogModel.query.get_or_404(id)
         return dog
 
+    @jwt_required()
     def delete(self, id):
         dog = DogModel.query.get_or_404(id)
         db.session.delete(dog)

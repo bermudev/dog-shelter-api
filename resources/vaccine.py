@@ -1,5 +1,6 @@
 from flask import request
 from flask.views import MethodView
+from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -16,6 +17,7 @@ class VaccineList(MethodView):
     def get(self):
         return VaccineModel.query.all()
 
+    @jwt_required()
     @blp.arguments(VaccineSchema)
     @blp.response(201, VaccineSchema)
     def post(self, vaccine_data):
@@ -37,6 +39,7 @@ class Vaccine(MethodView):
         vaccine = VaccineModel.query.get_or_404(id)
         return vaccine
 
+    @jwt_required()
     def delete(self, id):
         vaccine = VaccineModel.query.get_or_404(id)
         db.session.delete(vaccine)
