@@ -1,9 +1,13 @@
-import models
+import secrets
+
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from flask_smorest import Api
 
+import models
 from db import db
 from resources.dog import blp as DogBlueprint
+from resources.user import blp as UserBlueprint
 from resources.vaccine import blp as VaccineBlueprint
 
 
@@ -26,10 +30,14 @@ def create_app(db_url=None):
 
     api = Api(app)
 
+    app.config["JWT_SECRET_KEY"] = str(secrets.SystemRandom().getrandbits(128))
+    JWTManager(app)
+
     with app.app_context():
         db.create_all()
 
     api.register_blueprint(DogBlueprint)
     api.register_blueprint(VaccineBlueprint)
+    api.register_blueprint(UserBlueprint)
 
     return app
