@@ -41,7 +41,7 @@ class Dog(MethodView):
         dog = DogModel.query.get_or_404(id)
         return dog
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(self, id):
         jwt = get_jwt()
         if not jwt.get("is_admin"):

@@ -39,7 +39,7 @@ class Vaccine(MethodView):
         vaccine = VaccineModel.query.get_or_404(id)
         return vaccine
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(self, id):
         jwt = get_jwt()
         if not jwt.get("is_admin"):
