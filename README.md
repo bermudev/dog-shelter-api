@@ -22,7 +22,7 @@ Some of the Flask tools used for the creation of these APIs are:
 
 This is going to be the final design of the project database, I have expanded the original idea and modified some fields with the suggestions of some dog-loving friends. It does not include the user part for login.
 
-![Database design](https://i.imgur.com/iYKokHv.png)
+![Database design](https://i.imgur.com/Pb1dSrf.png)
 
 ## Endpoints
 
