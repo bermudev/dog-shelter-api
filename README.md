@@ -35,13 +35,14 @@ The API has the following endpoints for each table, those marked with 🔒 requi
 | POST | /api/login/ | Login to the API using the username and password |
 | POST 🔒 | /api/logout/ | Logout from the API |
 | POST 🔒 | /api/refresh/ | Get a new token from the API |
-| DELETE 🔒 | /api/dogs/{id} | Delete an user from the shelter database |
+| DELETE 🔒 | /api/delete/{id} | Delete an user from the shelter database |
 
 | Method | Endpoint | Description |
 | ------ | -------- | ----------- |
 | GET | /api/dogs/ | Retrieve a list of all dogs available for adoption |
 | GET | /api/dogs/{id} | Retrieve details of a specific dog by ID |
 | POST 🔒 | /api/dogs/ | Add a new dog to the shelter database |
+| PUT 🔒 | /api/dogs/{id} | Update a dog from the shelter database |
 | DELETE 🔒 | /api/dogs/{id} | Remove a specific dog from the shelter database |
 
 | Method | Endpoint | Description |
@@ -49,5 +50,6 @@ The API has the following endpoints for each table, those marked with 🔒 requi
 | GET | /api/vaccines | Retrieve a list of all vaccines for a specific dog |
 | GET | /api/vaccines/{id} | Retrieve details of a specific vaccine for a specific dog |
 | POST 🔒 | /api/vaccines | Add a new vaccine for a specific dog |
+| PUT 🔒 | /api/vaccines/{id} | Update a vaccine from the shelter database |
 | DELETE 🔒 | /api/vaccines/{id} | Remove a specific vaccine for a specific dog |
 
