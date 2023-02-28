@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from db import db
 from models import VaccineModel
-from schemas import VaccineSchema
+from schemas import VaccineSchema, VaccineUpdateSchema
 
 blp = Blueprint("vaccines", __name__, description="Operations on vaccines")
 
@@ -50,3 +50,19 @@ class Vaccine(MethodView):
         db.session.commit()
 
         return {"message": "Vaccine entry deleted."}
+
+    @jwt_required()
+    @blp.arguments(VaccineUpdateSchema)
+    @blp.response(200, VaccineSchema)
+    def put(self, vaccine_data, id):
+        vaccine = VaccineModel.query.get(id)
+        if vaccine:
+            vaccine.vaccine_name = vaccine_data["vaccine_name"]
+            vaccine.vaccine_date = vaccine_data["vaccine_date"]
+        else:
+            vaccine = VaccineModel(id=id, **vaccine_data)
+
+        db.session.add(vaccine)
+        db.session.commit()
+
+        return vaccine
