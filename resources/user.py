@@ -64,7 +64,7 @@ class UserLogin(MethodView):
         abort(401, message="Invalid credentials.")
 
 
-@blp.route("/refresh")
+@blp.route("/api/refresh")
 class TokenRefresh(MethodView):
     @jwt_required(refresh=True)
     def post(self):
