@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from db import db
 from models import DogModel
-from schemas import DogSchema
+from schemas import DogSchema, DogUpdateSchema
 
 blp = Blueprint("dogs", __name__, description="Operations on dogs")
 
@@ -52,3 +52,25 @@ class Dog(MethodView):
         db.session.commit()
 
         return {"message": "Dog entry deleted."}
+
+    @jwt_required()
+    @blp.arguments(DogUpdateSchema)
+    @blp.response(200, DogSchema)
+    def put(self, dog_data, id):
+        dog = DogModel.query.get(id)
+        if dog:
+            dog.name = dog_data["name"]
+            dog.breed = dog_data["breed"]
+            dog.age = dog_data["age"]
+            dog.gender = dog_data["gender"]
+            dog.size = dog_data["size"]
+            dog.description = dog_data["description"]
+            dog.picture_url = dog_data["picture_url"]
+            dog.adopted = dog_data["adopted"]
+        else:
+            dog = DogModel(id=id, **dog_data)
+
+        db.session.add(dog)
+        db.session.commit()
+
+        return dog

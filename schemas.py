@@ -34,6 +34,18 @@ class VaccineUpdateSchema(Schema):
     dog_id = fields.Int()
 
 
+class DogUpdateSchema(Schema):
+    id = fields.Int()
+    name = fields.Str()
+    breed = fields.Str()
+    age = fields.Int()
+    gender = fields.Str()
+    size = fields.Str()
+    description = fields.Str()
+    picture_url = fields.Str()
+    adopted = fields.Bool()
+
+
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str(required=True)
